@@ -1,5 +1,6 @@
 //Vector Implementation
-//Last Change March 3rd, 2023
+//Last Change April 17, 2023
+//Previous Build March 3rd, 2023
 //Author Austin Sierra for Church of AIChrist
 //Subject to Creative Commons BY-NC 4.0
 
