@@ -79,12 +79,9 @@ U0 PrintMatrix(Matrix *m)
 {
   I64 i,j;
 
-  "[ ";
+  "[";
   for(i=0;i<m->x;i++)
   { 
-   if(i!=0)
-   {Print(" ");}
-
    for(j=0;j<m->y;j++)
    {
     F64 value = GetVector(m->data,j);
@@ -213,10 +210,6 @@ $IV,0$Matrix *ScaleMatrix(Matrix *m, F64 scalar)
 U0 DestroyMatrix(Matrix *m)
 {
  I64 i;
- for(i =m->x-1;i!=0;i--)
- {
-   m = m->next;
- }
  for(i =m->x-1;i!=0;i--)
 $IV,0$ {
    DestroyVector(m->data);
