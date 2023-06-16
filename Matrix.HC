@@ -1,9 +1,8 @@
 //Matrix Implementation
-//Last Change April 17th, 2023
+//Last Change June 16th, 2023
 //Author Austin Sierra for Church of AIChrist
 //Subject to Creative Commons BY-NC 4.0
-Cd(__DIR__);$IV,0$$IV,0$;
-#include "vector.HC";
+#include "Vector.HC";
 
 
 //Matrix Object Declaration
@@ -30,7 +29,7 @@ Matrix *CreateMatrix(I64 _x,I64 _y)
    {
    
     m->x = _x; m->y = _y;
-    SetVector(m->data,j,0);
+    SetVector(m->data,0,j);
  
    }
    
@@ -54,9 +53,8 @@ Matrix *CreateMatrix(I64 _x,I64 _y)
 
 }
 
-
 //Set Matrix m at data position i to value d
-U0 SetMatrix(Matrix *m,I64 x_,I64 y_, F64 d)
+U0 SetMatrixVector(Matrix *m,Vector *d, I64 x_)
 {
  try{ 
   I64 i=0;
@@ -66,7 +64,44 @@ U0 SetMatrix(Matrix *m,I64 x_,I64 y_, F64 d)
    i++;
     
   }
-   SetVector(m->data,y_,d);
+  
+  Vector *vMS = m->data;
+  I64 sz = d->size;
+  I64 sz2 = vMS->size;
+  if(sz!=sz2)
+  {
+   Print("%d\n",sz);
+   Print("%d\n",sz2);
+   "Cannot Set Matrix Value to Matrix of Different Size";
+   PutExcept;
+  }
+  
+  for(i=0;i<d->size;i++)
+  {
+   SetVector(m->data,GetVector(d,i),i);
+  }
+
+ }
+ catch{
+   "Matrix Vector Location Out of Range";
+   PutExcept;
+ };
+}
+
+
+
+//Set Matrix m at data position x y to value d
+U0 SetMatrix(Matrix *m,F64 d, I64 x_,I64 y_)
+{
+ try{ 
+  I64 i=0;
+  while(i<x_)
+  { 
+   m = m->next;
+   i++;
+    
+  }
+   SetVector(m->data,d,y_);
  }
  catch{
    "Matrix Location Out of Range";
@@ -82,6 +117,7 @@ U0 PrintMatrix(Matrix *m)
   "[";
   for(i=0;i<m->x;i++)
   { 
+
    for(j=0;j<m->y;j++)
    {
     F64 value = GetVector(m->data,j);
@@ -96,7 +132,7 @@ U0 PrintMatrix(Matrix *m)
    m = m->next;
    
   }
-  "]\n";
+  " ]\n";
 }
 
 //returns the data value at position x,y in Matrix m
@@ -111,6 +147,20 @@ F64 GetMatrix(Matrix *m, I64 x, I64 y)
   }
   return GetVector(m->data,y);
 }
+
+//returns the Vector at row x.
+Vector *GetMatrixVector(Matrix *m, I64 x)
+{
+  I64 i=0;
+  while(i<x)
+  { 
+   m = m->next;
+   i++;
+    
+  }
+  return GetVector(m->data,x);
+}
+
 
 //Add two matrix of the same size
 Matrix *AddMatrix(Matrix *m1, Matrix *m2)
@@ -127,7 +177,7 @@ Matrix *AddMatrix(Matrix *m1, Matrix *m2)
     {
       for(mY=0;mY<m1->y;mY++)
       {
-$IV,0$$IV,0$$IV,1$$IV,0$  $IV,1$$IV,0$     SetMatrix(sum,m$IV,0$X,mY,GetMatrix(m1,mX,mY)+GetMatrix(m2,mX,mY));
+$IV,0$$IV,0$$IV,1$$IV,0$  $IV,1$$IV,0$     SetMatrix(sum,GetMatrix(m1,mX,mY)+GetMatrix(m2,mX,mY),m$IV,0$X,mY);
 $IV,0$      }
 $IV,0$    }
 $IV,0$    return sum;
@@ -148,7 +198,7 @@ $IV,0$    for(mX=0;mX<m1->x;mX++)
 $IV,0$    {
 $IV,0$     for(mY=0;mY<m1->y;mY++)
      {
-       SetMatrix(dif,mX,mY,GetMatrix(m1,mX,mY)-GetMatrix(m2,mX,mY));
+       SetMatrix(dif,GetMatrix(m1,mX,mY)-GetMatrix(m2,mX,mY),mX,mY);
      }
       
     }
@@ -184,7 +234,7 @@ F64 MultiplyMatrix(Matrix *m1, Matrix *m2)
 
 $IV,0$$IV,0$$IV,0$         }
 
-         SetMatrix(product,pX,pY,currentProduct);
+         SetMatrix(product,currentProduct, pX,pY);
   
       }
 
@@ -193,14 +243,14 @@ $IV,0$$IV,0$$IV,0$         }
     return product;
   }
 }
-
+//Multiply a matrix by a scalar
 $IV,0$Matrix *ScaleMatrix(Matrix *m, F64 scalar)
 {
   Matrix* scaled = CreateMatrix(m->x,m->y);
   I64 mX,mY;
   for(mX =0;mX<m->x;mX++){
     for(mY =0;mY<m->y;mY++){
-      SetMatrix(scaled,mX,mY,GetMatrix(m,mX,mY)*scalar);
+      SetMatrix(scaled,GetMatrix(m,mX,mY)*scalar,mX,mY);
     }
   }
   return scaled;
@@ -210,9 +260,10 @@ $IV,0$Matrix *ScaleMatrix(Matrix *m, F64 scalar)
 U0 DestroyMatrix(Matrix *m)
 {
  I64 i;
- for(i =m->x-1;i!=0;i--)
+ for(i =0;i<m->x;i++)
 $IV,0$ {
-   DestroyVector(m->data);
+   Vector *v = m->data;
+   DestroyVector(v);
    m = m->last;
    Free(m->next);
  }
@@ -224,25 +275,27 @@ U0 MainMatrix()
   I32 matrixSizeX = 3, matrixSizeY = 2;
   Matrix *m1= CreateMatrix(matrixSizeX,matrixSizeY);
   Matrix *m2= CreateMatrix(matrixSizeY,matrixSizeX);
+Matrix *m3= CreateMatrix(matrixSizeY,matrixSizeY);
+Matrix *m4= CreateMatrix(matrixSizeY,matrixSizeY);
  
  $IV,0$ "m1 = \n";
-  SetMatrix(m1,0,0,1);
-  SetMatrix(m1,0,1,1);
-  SetMatrix(m1,1,0,2);    
-  SetMatrix(m1,1,1,3);
-  SetMatrix(m1,2,0,5);
-  SetMatrix(m1,2,1,8);
+  SetMatrix(m1,1,0,0);
+  SetMatrix(m1,1,0,1);
+  SetMatrix(m1,2,1,0);    
+  SetMatrix(m1,3,1,1);
+  SetMatrix(m1,5,2,0);
+  SetMatrix(m1,8,2,1);
   PrintMatrix(m1);
 
  
   
   "\nm2 = \n";
-  SetMatrix(m2,0,0,2);
-  SetMatrix(m2,0,1,2);
-  SetMatrix(m2,0,2,4);    
-  SetMatrix(m2,1,0,4);
-  SetMatrix(m2,1,1,8);
-  SetMatrix(m2,1,2,8);
+  SetMatrix(m2,2,0,0);
+  SetMatrix(m2,2,0,1);
+  SetMatrix(m2,4,0,2);    
+  SetMatrix(m2,4,1,0);
+  SetMatrix(m2,8,1,1);
+  SetMatrix(m2,8,1,2);
   PrintMatrix(m2);
 
   "\nm2 * 2 =\n";
@@ -252,8 +305,25 @@ U0 MainMatrix()
   DestroyMatrix(m1);
   DestroyMatrix(m2);
  
+"\nm3 = \n";
+  SetMatrix(m3,1,0,0);
+  SetMatrix(m3,3,0,1);
+  SetMatrix(m3,2,1,0);    
+  SetMatrix(m3,4,1,1);
+  PrintMatrix(m3);
+
  
+  
+"\nm4 = \n";
+  SetMatrix(m4,4,0,0);    
+  SetMatrix(m4,2,0,1);
+  SetMatrix(m4,3,1,0);
+  SetMatrix(m4,1,1,1);
+  PrintMatrix(m4);
+"\nm3 - m4:\n";
+  PrintMatrix(SubMatrix(m3,m4)); 
+  
+  DestroyMatrix(m3);
+  DestroyMatrix(m4); 
 
-}MainMatrix;
-
-$IV,0$//note: typecast is postfix, i.e. ToI64();$IV,0$$IV,0$$IV,0$
+}//$IV,0$$IV,0$$IV,0$MainMatrix;
