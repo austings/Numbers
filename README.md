@@ -5,7 +5,7 @@ Matrix.HC - Contains operations for matrix create/destroy/get/set/scale/add/subt
 
 Vector.HC -  Contains operations for vector create/destroy/get/set/scale/dotproduct/magnitude/add
 
-Tensor3D.HC -  Contains operations for Tensor create/destroy/get
+Tensor3D.HC -  Contains operations for Tensor create/destroy/get/set
 
 RGBTensor.HC -  Contains operations for converting a BMP image from Moses Staff to Tensor
 
