@@ -81,7 +81,7 @@ Tensor3D *CreateTensor(Vector *tensorShape)
 
 }
 
-
+//Set value d at position x,y,z
 U0 SetTensor(Tensor3D*t, F64 d, I64 x=0, I64 y=0, I64 z=0)
 {
  Vector *v = t->shape;
