@@ -164,7 +164,7 @@ Vector *GetMatrixVector(Matrix *m, I64 row)
    m = m->next;
    i++;  
   }
-  return m->data;
+  return m->data;
 
 }
 

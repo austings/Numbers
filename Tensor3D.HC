@@ -1,4 +1,4 @@
-//Last Change June 15, 2023 
+//Last Change Sept 3, 2023 
 //By Austin Sierra
 //for Church of AI Christ
 //Subject to Creative Commons BY-NC 4.0
@@ -15,11 +15,8 @@
 //Tensor Object Declaration
 public class Tensor3D
 {
-
  Vector *shape;
-
  Matrix *data;
-
  Tensor3D *last,*next; 
 
 };
@@ -86,7 +83,7 @@ Tensor3D *CreateTensor(Vector *tensorShape)
       t = t->next;
      }
      z--;
-    }
+    }
     break;
  }
  return t;
@@ -122,7 +119,7 @@ U0 SetTensor(Tensor3D *t, F64 d, I64 x=0, I64 y=0, I64 z=0)
      SetMatrix(t->data,d,x,y);
     }
     t = t->next;
-    sz--;
+    sz--;tot++;
    }
    break;
 
@@ -134,7 +131,7 @@ U0 SetTensor(Tensor3D *t, F64 d, I64 x=0, I64 y=0, I64 z=0)
 
 /*
 
-  Takes a Vector d and updates values at x,y across Z level
+  Takes a Vector d and updates values at x,z across Y level
 
 */
 U0 SetTensorVector(Tensor3D *t, Vector *d, I64 x=0, I64 z=0)
@@ -171,6 +168,52 @@ U0 SetTensorVector(Tensor3D *t, Vector *d, I64 x=0, I64 z=0)
 
  
 }
+
+/*
+
+  Takes a Vector d and updates values at x,y across Z level
+
+*/
+U0 SetTensorVectorZ(Tensor3D *t, Vector *d, I64 x=0, I64 y=0)
+{
+ Vector *sz = t->shape;
+ I64 szt= GetVector(sz,2),szv, z=0;
+ switch(szt)
+ {
+  case 0:
+   "Cannot set vector ascross z on < 3D Tensor";
+   PutExcept;
+   break;
+  case 1:
+   "Cannot set vector across z on < 3D Tensor";
+   PutExcept;
+   break;
+  case 2:
+   "Cannot set vector across z on < 3D Tensor";
+   PutExcept;
+   break;
+  case 3:
+   szv= d->size;
+   if(szv!=szt)
+   {
+     "Cannot set vector on tensor with different z size";
+     PutExcept;
+     break;
+   }
+   else
+   {
+     while(szv>0)
+     {
+      //Print("\n%d,%d,%d\n",x,y,z);
+      F64 val = GetVector(d,z);
+      SetTensor(t,val,x,y,z);
+      z++;szv--;
+     }
+     break;
+   }   
+ } 
+}
+
 
 F64 GetTensor(Tensor3D *t,I64 x=0,I64 y=0,I64 z =0)
 {
@@ -288,7 +331,7 @@ U0 MainTensor()
   SetTensorVector(t1,v2,0,2);
   SetTensorVector(t1,v2,1,0);
   SetTensorVector(t1,v2,1,1);
-  SetTensorVector(t1,v2,1,2);
+  SetTensorVectorZ(t1,v2,0,0);
 
   DestroyVector(v2);
  
