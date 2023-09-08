@@ -1,7 +1,5 @@
-#help_index "Graphics/Windows BMP Files"
-
 #define BMP_COLORS_NUM	16
-
+//#include "RGBTensor.HC";
 class CFileBMP
 {
   U16 type;
@@ -207,7 +205,6 @@ U8 *BMPPaletteNew(CFileBMP *bmp)
 
 U8 ms_paint_palette[BMP_COLORS_NUM]={0,4,2,6,1,5,3,8,7,12,10,14,9,13,11,15};
 
-
 I64 BMP24Color(CBGR24 *ptr,Bool dither_probability)
 {
   I64 res,k;
@@ -285,7 +282,7 @@ public CDC *BMPRead(U8 *filename,Bool dither_probability=FALSE,
 	    for (j=0;j<(bmp->width+7)&~7;) {
 	      res->color=palette_map[*ptr&15];
 	      GrPlot(res,j+1,i);
-	      res->color=palette_map[*ptr>>4];
+	      res->color=palette_map[*ptr>>4];
 	      GrPlot(res,j,i);
 	      ptr++;
 	      j+=2;
@@ -321,6 +318,7 @@ public CDC *BMPRead(U8 *filename,Bool dither_probability=FALSE,
   }
   return res;
 }
+
 
 #help_index "Graphics/Sprite;Graphics/Windows BMP Files;"\
 	"DolDoc/Output;StdOut/DolDoc"
@@ -366,7 +364,7 @@ public I64 GR2BMPLst(U8 *files_find_mask,U8 *fu_flags=NULL,
     if (out_cdt==I64_MIN)
       out_cdt=in_cdt;
     while (out_cdt<=in_cdt) {
-      st=MStrPrint(out_print_fmt,res++);
+      st=MStrPrint(out_print_fmt,res++);
       BMPWrite(st,base);
       Free(st);
       out_cdt+=CDATE_FREQ/fps;

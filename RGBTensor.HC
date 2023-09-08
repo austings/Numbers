@@ -6,17 +6,9 @@
 
 //Require Tensor3D structure
 //Require FileBMP structure 
-Cd(__DIR__);;
-
+//Cd(__DIR__);;
+//#include "FileBMP.HC";
 #include "Tensor3D.HC";
-#include "FileBMP.HC";
-
-
-
-CDC *currentRender[4];
-F64 global_scale;
-
-
 
 //Return Individual RGBValues
 I64 ColorValueCast(CBGR24 *ptr, U8 RGoB)
@@ -40,15 +32,12 @@ I64 ColorValueCast(CBGR24 *ptr, U8 RGoB)
 }
 
 
-
-
-//Filepath of BMP returns as Tensor *bmpt3d
+//Filepath of BMP returns as Tensor *bmpt3d
 Tensor3D *BMPFileToTensor(U8 *filename)
 {
   //File information including device context
   CFileBMP *bmp;
   U8 *ptr;
-  Bool rle;
   CDC *res=NULL;
   Tensor3D *bmpt3d=NULL;
 
@@ -58,51 +47,35 @@ Tensor3D *BMPFileToTensor(U8 *filename)
     bmp=ptr;
     if (0<bmp->width<I32_MAX && 0<bmp->height<I32_MAX) 
     {
-      //intialize dc (only if you need to draw)
-      //res=DCNew(bmp->width,bmp->height);
-      //initialize return
       //Size of Return Tensor 
 
       Vector *sz = CreateVector(3);  
-      SetVector(sz,bmp->height,0);//height
-      SetVector(sz,bmp->width,1);//width
+      SetVector(sz,bmp->width,0);//height
+      SetVector(sz,bmp->height,1);//width
       SetVector(sz,3,2);//channels 
       bmpt3d = CreateTensor(sz);
 
       //Print("%d\n",bmp->height);
-      //Print("%d\n",bmp->width); 
+      //Print("%d\n",bmp->width);
 
       ptr+=bmp->data_offset;     
-      //set a palette if you want to draw
-      //palette_map=BMPPaletteNew(bmp);
-      //Only supports Images from Moses Staff App
-     
+      
       if (bmp->bit_cnt==32) 
       {
 	for (i=bmp->height-1;i>=0;i--) 
         {
 	  for (j=0;j<bmp->width;j++,ptr+=4) 
           {
-            //change dc automatically
-            //res->color=BMP24Color(ptr,FALSE);
-            //save to return
-
             Vector *tmpV = CreateVector(3);
 
-            SetVector(tmpV,ColorValueCast(ptr,0),0);
-            SetVector(tmpV,ColorValueCast(ptr,1),1);
-            SetVector(tmpV,ColorValueCast(ptr,2),2);
+            SetVector(tmpV,ColorValueCast(ptr,2),0);//b
+            SetVector(tmpV,ColorValueCast(ptr,1),1);//g
+            SetVector(tmpV,ColorValueCast(ptr,0),2);//r
 
-            SetTensorVectorZ(bmpt3d,tmpV,i,j);
+            SetTensorVectorZ(bmpt3d,tmpV,j,i);
             
             DestroyVector(tmpV);
-           
-
           }
-          //if(bmp->bit_cnt==24)
-          //  ptr-=1;
-          //  ptr+=bmp->width&3;
-
         }
       }
       else 
@@ -112,7 +85,6 @@ Tensor3D *BMPFileToTensor(U8 *filename)
 	res=NULL;
       }
     } 
-
     else
     { 
       "\nInvalid BMP File\n";
@@ -125,15 +97,36 @@ Tensor3D *BMPFileToTensor(U8 *filename)
 }
 
 
-//Main to Test BMPVector
-//Change the file to whatever you need
+//Sept 7 AS
+public CDC *BMPTensorRead(Tensor3D*bmp,
+    Bool dither_probability=FALSE)
+{//Display Tensor on Screen.
+  I64 i,j;
+  CDC *res=NULL;
+  I64 bmpW = GetVector(bmp->shape,0);
+  I64 bmpH = GetVector(bmp->shape,1);
+  //I64 bmpC = GetVector(bmp->shape,2);
+  res =DCNew(bmpW,bmpH);
+  for (i=bmpH-1;i>=0;i--){
+    for (j=0;j<bmpW;j++) {
+      CBGR24 *curr=NULL;
+      curr->b = GetTensor(bmp,j,i,0);
+      curr->g = GetTensor(bmp,j,i,1);
+      curr->r = GetTensor(bmp,j,i,2);
+      res->color=BMP24Color(curr,dither_probability);
+      GrPlot(res,j,i);
+    }    
+  } 
+    
+  //Free(bmp);
+  return res;
+}
 
-U0 BMPVector()
+public U0 RGBTMain()
+{
+  //for testing
+  Tensor3D *five = BMPFileToTensor("C:/Home/Perceptrons/BMP/cat.0.bmp");
+  PrintTensor(five);
+  DestroyTensor(five);
 
-{  
-
-  Tensor3D *img = BMPFileToTensor("BMP/cat.5.bmp");
-  PrintTensor(img);  
-  DestroyTensor(img);
-
-}BMPVector;
+}//RGBTMain;  

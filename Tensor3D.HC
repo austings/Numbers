@@ -177,7 +177,7 @@ U0 SetTensorVector(Tensor3D *t, Vector *d, I64 x=0, I64 z=0)
 U0 SetTensorVectorZ(Tensor3D *t, Vector *d, I64 x=0, I64 y=0)
 {
  Vector *sz = t->shape;
- I64 szt= GetVector(sz,2),szv, z=0;
+ I64 szt= GetVector(sz,2), z=0;
  switch(szt)
  {
   case 0:
@@ -193,28 +193,20 @@ U0 SetTensorVectorZ(Tensor3D *t, Vector *d, I64 x=0, I64 y=0)
    PutExcept;
    break;
   case 3:
-   szv= d->size;
-   if(szv!=szt)
+   while(z<3)
    {
-     "Cannot set vector on tensor with different z size";
-     PutExcept;
-     break;
+    //Print("\n%d,%d,%d\n",x,y,z);
+    F64 val = GetVector(d,z);
+    SetTensor(t,val,x,y,z);
+    z++;
    }
-   else
-   {
-     while(szv>0)
-     {
-      //Print("\n%d,%d,%d\n",x,y,z);
-      F64 val = GetVector(d,z);
-      SetTensor(t,val,x,y,z);
-      z++;szv--;
-     }
-     break;
-   }   
+   break;
+  
  } 
 }
 
 
+//Get F64 val from position x,y,z from tensor t
 F64 GetTensor(Tensor3D *t,I64 x=0,I64 y=0,I64 z =0)
 {
  Vector *v = t->shape;
@@ -238,14 +230,13 @@ F64 GetTensor(Tensor3D *t,I64 x=0,I64 y=0,I64 z =0)
    sz= GetVector(v,2);
    I64 tot = 0;
    I64 val = 0;
-   while(tot<sz)
+   while(tot<sz)
    {
     if(tot==z)
     {
      val= GetMatrix(t->data,x,y);
     }
     t = t->next;
-    sz--;
     tot++;
    }
    return val; 
@@ -253,6 +244,71 @@ F64 GetTensor(Tensor3D *t,I64 x=0,I64 y=0,I64 z =0)
 
  }
 
+}
+
+/*
+* Checks the size and stride and returns a new tensor
+* with zero padding so that no pixels are skipped.
+*
+* God says forth sings immense unawares 
+*/
+Tensor3D *ZeroPadTensor(Tensor3D *original,I32 size,I32 stride)
+{
+  I64 i_w = GetVector(original->shape,0);
+  I64 i_h = GetVector(original->shape,1);
+  I64 i_d = GetVector(original->shape,2);
+  I64 pad_w=0,pad_h=0,i,j;
+  F64 a,b,c;
+
+  //determine if calculating padding is necessary
+  if(i_w % stride!=0 && (i_w%stride)%size!=0)
+  {
+    pad_w= (size-i_w%stride)%stride;
+    if(pad_w<1)
+      pad_w=0;
+  
+  }
+  if(i_h % stride!=0 && (i_h%stride)%size!=0)
+  {
+    pad_h= (size-i_h%stride)%stride;
+    if(pad_h<1)
+      pad_h=0;
+  
+  }
+  if(pad_w==0&&pad_h==0)
+    return original;
+   
+  //calculate the new tensor 
+  Vector *newSize = CreateVector(3);
+  SetVector(newSize,i_w+pad_w,0);
+  SetVector(newSize,i_h+pad_h,1);
+  SetVector(newSize,i_d,2);
+
+  Print("\n%d,%d\n",i_w,i_h);
+  Print("\n%d,%d\n",i_w+pad_w,i_h+pad_h);
+//TODO:fix this padding leaving zeros and overall sucks
+
+  Tensor3D*newT = CreateTensor(newSize);
+  for(i=0;i<i_w+pad_w;i++)
+  {
+   if(i>=pad_w&&i<=i_w-pad_w)
+   {  
+    for(j=0;j<i_h+pad_h;j++)
+    {
+     if(j>=pad_h&&j<=i_h-pad_h)
+     {
+       a=GetTensor(original,i,j,0);
+       b=GetTensor(original,i,j,1);
+       c=GetTensor(original,i,j,2);
+       SetTensor(newT,a,i,j,0);
+       SetTensor(newT,b,i,j,1);
+       SetTensor(newT,c,i,j,2);
+     }
+    }
+   } 
+  }
+  return newT;
+  
 }
 
 U0 PrintTensor(Tensor3D *t)

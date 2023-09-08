@@ -43,7 +43,6 @@ U0 ReplaceVector(Vector *v1, Vector *v2)
 //Set Vector v at data position i to value d
 U0 SetVector(Vector *v,F64 d,I32 i)
 {
-
  v->data[i] = d; 
 
 }
@@ -75,33 +74,19 @@ F64 GetVector(Vector *v, I32 i)
 
 //Add two vectors of the same size
 Vector *AddVectors(Vector *v1, Vector *v2)
-
 {
-
   I32 i;
-
   if(v1->size != v2->size){
-
     "Error: attempt to add vectors of different size.";
-
     return v1;
-
   }
-
   else
-
   {
-
     Vector *sum = CreateVector(v1->size);
-
     for(i=0;i<v1->size;i++)
-
     {
-
       sum->data[i] = v1->data[i] + v2->data[i];
-
     }
-
     return sum;
 
   }
@@ -112,17 +97,11 @@ Vector *AddVectors(Vector *v1, Vector *v2)
 //i.e. distance from the origin in Euclidean space
 F64 MagnitudeVector(Vector *v)
 {
-
   F64 sum = 0;
-
   I32 i;
-
   for(i = 0;i<v->size;i++){
-
     sum+= v->data[i] * v->data[i];
-
   }
-
   return Sqrt(sum);
 
 }
@@ -130,59 +109,35 @@ F64 MagnitudeVector(Vector *v)
 //Calculate the dot product of two Vectors v1 and v2
 F64 DotProductVectors(Vector *v1, Vector *v2)
 {
-
   F64 product = 0.0;
-
   I32 i;
 
-
-
   if(v1->size != v2->size)
-
   {
-
     "Error: attempt for dot product of vectors of different size.";
-
     return product;
-
   }
-
   else
-
   {
-
     for(i=0;i<v1->size;i++)
-
     {
-
       product+= v1->data[i] * v2->data[i];
-
     }
-
     return product;
-
   }
 
 }
 
 Vector *ScaleVector(Vector *v, F64 scalar)
 {
-
   Vector* scaled = CreateVector(v->size);
-
   I32 i;
-
   for(i =0;i<v->size;i++){
-
     scaled->data[i] = v->data[i] * scalar;
-
   }
-
   return scaled;
 
 }
-
-
 
 
 
@@ -231,7 +186,7 @@ U0 MainVector()
   DestroyVector(v2);
   DestroyVector(sum);
   DestroyVector(scaled);
-
+
 }//MainVector;
 
 

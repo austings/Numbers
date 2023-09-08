@@ -281,7 +281,7 @@ U0 MainMatrix()
   Matrix *m1= CreateMatrix(matrixSizeX,matrixSizeY);
   Matrix *m2= CreateMatrix(matrixSizeY,matrixSizeX);
   Matrix *m3= CreateMatrix(matrixSizeY,matrixSizeY);
-  Matrix *m4= CreateMatrix(matrixSizeY,matrixSizeY);
+  Matrix *m4= CreateMatrix(matrixSizeY,matrixSizeY);
 
  
 
