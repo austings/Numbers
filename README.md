@@ -11,6 +11,10 @@ RGBTensor.HC -  Contains operations for converting a BMP image from Moses Staff 
 
 FileBMP.HC -  Contains structure for BMP File Read
 
+BMPView.HC- Contains functions for BMP file and tensor view
+
+Per.HC - Contains max pooling functions for BMP images (will contain perceptron functionality at a later date)
+
 # Install
 Add the CD to an existing TempleOS install and CopyTree to your C:/ from T:/Home/Perceptrons.
 
