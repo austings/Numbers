@@ -15,6 +15,9 @@ BMPView.HC- Contains functions for BMP file and tensor view
 
 Per.HC - Contains max pooling functions for BMP images
 
+
+TODO: upgrade vectors to use hashmaps. linked lists are not efficent. 
+
 # Install
 Add the CD to an existing TempleOS install and CopyTree to your C:/ from T:/Home/Perceptrons.
 
